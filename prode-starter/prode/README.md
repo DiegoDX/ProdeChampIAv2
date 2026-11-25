@@ -20,4 +20,40 @@ Los pronósticos de un partido se cierran al comenzar el partido.
 En construcción. El trabajo está dividido en issues; cada issue se entrega en un pull request.
 
 ## Cómo ejecutarlo
-Pendiente: se completa con el issue #1 (backend) y el #8 (frontend).
+
+### Ejecutar el backend
+
+**Requisitos**
+- [.NET SDK 10](https://dotnet.microsoft.com/download) (LTS)
+- SQL Server (local, LocalDB o en Docker)
+
+**Estructura** (`/backend`)
+- `src/Prode.Domain`: entidades y reglas puras, sin dependencias.
+- `src/Prode.Application`: casos de uso e interfaces; depende solo de Domain.
+- `src/Prode.Infrastructure`: EF Core (`ProdeDbContext`) e implementaciones de las interfaces.
+- `src/Prode.Api`: Web API (configuración, inyección de dependencias y endpoints).
+- `tests/Prode.UnitTests`: tests con xUnit.
+
+**Configurar la cadena de conexión**
+
+La clave `ConnectionStrings:Default` está vacía en `appsettings.json`. El valor real se guarda con *user-secrets* y nunca se sube al repositorio:
+
+```bash
+cd backend
+dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost;Database=Prode;Trusted_Connection=True;TrustServerCertificate=True" --project src/Prode.Api
+```
+
+**Compilar, probar y ejecutar**
+
+```bash
+cd backend
+dotnet build
+dotnet test
+dotnet run --project src/Prode.Api --launch-profile http
+```
+
+- Salud: `GET http://localhost:5231/health` responde `{ "status": "ok" }`.
+- Swagger UI (solo en desarrollo): `http://localhost:5231/swagger`.
+
+### Ejecutar el frontend
+Pendiente: se completa con el issue del esqueleto de Angular.
