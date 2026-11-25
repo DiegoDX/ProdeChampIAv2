@@ -1,0 +1,6 @@
+@Prode.Api_HostAddress = http://localhost:5231
+
+GET {{Prode.Api_HostAddress}}/health
+Accept: application/json
+
+###
