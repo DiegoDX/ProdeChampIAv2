@@ -43,6 +43,24 @@ cd backend
 dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost;Database=Prode;Trusted_Connection=True;TrustServerCertificate=True" --project src/Prode.Api
 ```
 
+**Aplicar las migraciones**
+
+Las migraciones de EF Core están en `src/Prode.Infrastructure/Persistence/Migrations`. La herramienta `dotnet-ef` se instala como herramienta local del repositorio (`backend/dotnet-tools.json`), así que no hace falta instalarla de forma global:
+
+```bash
+cd backend
+dotnet tool restore
+dotnet ef database update --project src/Prode.Infrastructure --startup-project src/Prode.Api
+```
+
+El comando usa la cadena de conexión `ConnectionStrings:Default` configurada antes y crea la base si no existe.
+
+Para crear una migración nueva después de cambiar el modelo:
+
+```bash
+dotnet ef migrations add <Nombre> --project src/Prode.Infrastructure --startup-project src/Prode.Api --output-dir Persistence/Migrations
+```
+
 **Compilar, probar y ejecutar**
 
 ```bash
