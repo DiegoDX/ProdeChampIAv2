@@ -49,5 +49,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("Health");
 
 app.MapAuthEndpoints();
+app.MapTournamentEndpoints();
 
 app.Run();

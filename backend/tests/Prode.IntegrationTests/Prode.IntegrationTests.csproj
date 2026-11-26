@@ -25,4 +25,9 @@
     <ProjectReference Include="..\..\src\Prode.Api\Prode.Api.csproj" />
   </ItemGroup>
 
+  <!-- Archivo de ejemplo del repositorio, usado por los tests de importación de torneos. -->
+  <ItemGroup>
+    <None Include="..\..\samples\sample-tournament.json" Link="samples\sample-tournament.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

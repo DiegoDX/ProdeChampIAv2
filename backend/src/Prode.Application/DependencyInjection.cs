@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Prode.Application.Auth;
+using Prode.Application.Tournaments;
 
 namespace Prode.Application;
 
@@ -9,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<AuthService>();
+        services.AddScoped<TournamentService>();
         return services;
     }
 }

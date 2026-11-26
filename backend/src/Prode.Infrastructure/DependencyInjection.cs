@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Prode.Application.Auth;
+using Prode.Application.Tournaments;
 using Prode.Infrastructure.Authentication;
 using Prode.Infrastructure.Persistence;
 using Prode.Infrastructure.Persistence.Repositories;
@@ -35,6 +36,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITournamentRepository, TournamentRepository>();
         services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
         services.AddSingleton<ITokenGenerator, JwtTokenGenerator>();
 
