@@ -1,5 +1,7 @@
 # Prode
 
+[![CI](https://github.com/DiegoDX/ProdeChampIAv2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DiegoDX/ProdeChampIAv2/actions/workflows/ci.yml)
+
 Aplicación web para pronósticos de fútbol entre amigos. Un grupo crea una liga sobre un torneo (Mundial, Copa América), cada integrante pronostica los partidos y elige campeón y goleador. Gana quien acumule más puntos.
 
 ## Reglas de puntaje
