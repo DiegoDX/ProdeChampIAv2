@@ -35,6 +35,7 @@ En construcción. El trabajo está dividido en issues; cada issue se entrega en 
 - `src/Prode.Infrastructure`: EF Core (`ProdeDbContext`) e implementaciones de las interfaces.
 - `src/Prode.Api`: Web API (configuración, inyección de dependencias y endpoints).
 - `tests/Prode.UnitTests`: tests con xUnit.
+- `tests/Prode.IntegrationTests`: tests de los endpoints con `WebApplicationFactory` y SQLite en memoria (no requieren SQL Server).
 
 **Configurar la cadena de conexión**
 
@@ -44,6 +45,18 @@ La clave `ConnectionStrings:Default` está vacía en `appsettings.json`. El valo
 cd backend
 dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost;Database=Prode;Trusted_Connection=True;TrustServerCertificate=True" --project src/Prode.Api
 ```
+
+**Configurar la autenticación (JWT) y el administrador**
+
+La API no arranca sin una clave de firma JWT de al menos 32 caracteres. Emisor y audiencia tienen valores por defecto en `appsettings.json` (sección `Jwt`); la clave (`Jwt:SigningKey`) está vacía y se guarda con *user-secrets*. El administrador global es el usuario que se registra con el email configurado en `Admin:Email`:
+
+```bash
+cd backend
+dotnet user-secrets set "Jwt:SigningKey" "<una-clave-aleatoria-de-al-menos-32-caracteres>" --project src/Prode.Api
+dotnet user-secrets set "Admin:Email" "<email-del-administrador>" --project src/Prode.Api
+```
+
+En producción se configuran con variables de entorno (`Jwt__SigningKey`, `Admin__Email`).
 
 **Aplicar las migraciones**
 
@@ -74,6 +87,7 @@ dotnet run --project src/Prode.Api --launch-profile http
 
 - Salud: `GET http://localhost:5231/health` responde `{ "status": "ok" }`.
 - Swagger UI (solo en desarrollo): `http://localhost:5231/swagger`.
+- Autenticación: `POST /auth/register`, `POST /auth/login` y `GET /auth/me` (protegido). En Swagger UI, el botón **Authorize** permite pegar el token devuelto por login o registro.
 
 ### Ejecutar el frontend
 Pendiente: se completa con el issue del esqueleto de Angular.
