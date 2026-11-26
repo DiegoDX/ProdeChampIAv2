@@ -26,7 +26,7 @@ En construcción. El trabajo está dividido en issues; cada issue se entrega en 
 ### Ejecutar el backend
 
 **Requisitos**
-- [.NET SDK 10](https://dotnet.microsoft.com/download) (LTS), versión 10.0.401 o un parche posterior de la misma banda (10.0.4xx), fijada en `backend/global.json`
+- [.NET SDK 10](https://dotnet.microsoft.com/download) (LTS), versión exacta 10.0.401, fijada en `backend/global.json`
 - SQL Server (local, LocalDB o en Docker)
 
 **Estructura** (`/backend`)
