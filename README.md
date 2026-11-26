@@ -1,5 +1,7 @@
 # Prode
 
+[![CI](https://github.com/DiegoDX/ProdeChampIAv2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DiegoDX/ProdeChampIAv2/actions/workflows/ci.yml)
+
 Aplicación web para pronósticos de fútbol entre amigos. Un grupo crea una liga sobre un torneo (Mundial, Copa América), cada integrante pronostica los partidos y elige campeón y goleador. Gana quien acumule más puntos.
 
 ## Reglas de puntaje
@@ -24,7 +26,7 @@ En construcción. El trabajo está dividido en issues; cada issue se entrega en 
 ### Ejecutar el backend
 
 **Requisitos**
-- [.NET SDK 10](https://dotnet.microsoft.com/download) (LTS)
+- [.NET SDK 10](https://dotnet.microsoft.com/download) (LTS), versión 10.0.401 o un parche posterior de la misma banda (10.0.4xx), fijada en `backend/global.json`
 - SQL Server (local, LocalDB o en Docker)
 
 **Estructura** (`/backend`)
