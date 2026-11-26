@@ -1,0 +1,17 @@
+{
+  "name": "Copa Ficticia 2026",
+  "teams": [
+    { "name": "Atlántida", "code": "ATL" },
+    { "name": "Borealia", "code": "BOR" },
+    { "name": "Costa Esmeralda", "code": "CES" },
+    { "name": "Dunas del Sur", "code": "DUN" }
+  ],
+  "matches": [
+    { "homeCode": "ATL", "awayCode": "BOR", "kickoffUtc": "2026-06-15T19:00:00Z", "stage": "Group" },
+    { "homeCode": "CES", "awayCode": "DUN", "kickoffUtc": "2026-06-15T22:00:00Z", "stage": "Group" },
+    { "homeCode": "ATL", "awayCode": "CES", "kickoffUtc": "2026-06-19T19:00:00Z", "stage": "Group" },
+    { "homeCode": "BOR", "awayCode": "DUN", "kickoffUtc": "2026-06-19T22:00:00Z", "stage": "Group" },
+    { "homeCode": "DUN", "awayCode": "ATL", "kickoffUtc": "2026-06-23T19:00:00Z", "stage": "Group" },
+    { "homeCode": "BOR", "awayCode": "CES", "kickoffUtc": "2026-06-23T19:00:00Z", "stage": "Group" }
+  ]
+}
