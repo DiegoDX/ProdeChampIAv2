@@ -1,4 +1,4 @@
-# Torneos, equipos, jugadores y partidos (carga inicial)
+# Torneos, equipos y partidos (carga inicial)
 
 ## Objetivo
 Tener torneos con su calendario de partidos cargados. Sin esto no hay nada que pronosticar.
@@ -11,7 +11,7 @@ Carga por archivo JSON, a través de un endpoint de administrador:
 {
   "name": "Nombre del torneo",
   "teams": [
-    { "name": "Equipo A", "code": "EQA", "players": ["Jugador 1", "Jugador 2"] }
+    { "name": "Equipo A", "code": "EQA" }
   ],
   "matches": [
     { "homeCode": "EQA", "awayCode": "EQB", "kickoffUtc": "2026-06-15T19:00:00Z", "stage": "Group" }
@@ -25,7 +25,6 @@ Carga por archivo JSON, a través de un endpoint de administrador:
 
 Endpoints de lectura (cualquier usuario autenticado):
 - `GET /tournaments` → lista de torneos
-- `GET /tournaments/{id}/teams` → equipos con sus jugadores
 - `GET /tournaments/{id}/matches` → partidos ordenados por fecha, con filtro opcional `?status=Scheduled|Finished`
 
 ## Criterios de aceptación
@@ -36,7 +35,7 @@ Endpoints de lectura (cualquier usuario autenticado):
 
 ## Tests requeridos
 - Validación del JSON: código de equipo inexistente, equipo contra sí mismo, equipo duplicado
-- Importación válida crea la cantidad correcta de equipos, jugadores y partidos (puede probarse en la capa Application con repositorios simulados)
+- Importación válida crea la cantidad correcta de equipos y partidos (puede probarse en la capa Application con repositorios simulados)
 
 ## Fuera de alcance
 Editar o borrar torneos, y obtener calendarios de una API externa.
