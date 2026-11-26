@@ -88,6 +88,44 @@ dotnet run --project src/Prode.Api --launch-profile http
 - Salud: `GET http://localhost:5231/health` responde `{ "status": "ok" }`.
 - Swagger UI (solo en desarrollo): `http://localhost:5231/swagger`.
 - Autenticación: `POST /auth/register`, `POST /auth/login` y `GET /auth/me` (protegido). En Swagger UI, el botón **Authorize** permite pegar el token devuelto por login o registro.
+- Torneos (cualquier usuario autenticado): `GET /tournaments` lista los torneos y `GET /tournaments/{id}/matches` devuelve los partidos ordenados por fecha, con filtro opcional `?status=Scheduled` o `?status=Finished`.
+
+**Importar un torneo**
+
+Solo el administrador (el usuario registrado con el email de `Admin:Email`) puede cargar torneos. La carga se hace enviando un archivo JSON a `POST /admin/tournaments/import`. En `backend/samples/sample-tournament.json` hay un ejemplo con 4 equipos y 6 partidos ficticios:
+
+```json
+{
+  "name": "Nombre del torneo",
+  "teams": [
+    { "name": "Equipo A", "code": "EQA" }
+  ],
+  "matches": [
+    { "homeCode": "EQA", "awayCode": "EQB", "kickoffUtc": "2026-06-15T19:00:00Z", "stage": "Group" }
+  ]
+}
+```
+
+1. Iniciar sesión como administrador (`POST /auth/login`) y copiar el `token` de la respuesta.
+2. Enviar el archivo:
+
+```bash
+cd backend
+curl -X POST http://localhost:5231/admin/tournaments/import \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  --data-binary @samples/sample-tournament.json
+```
+
+La respuesta `201` incluye el id del torneo y la cantidad de equipos y partidos creados. También se puede importar desde Swagger UI pegando el contenido del archivo en el cuerpo de la solicitud.
+
+Reglas del archivo:
+- El código de equipo tiene exactamente 3 letras y no se repite. Los nombres de equipo tampoco se repiten.
+- Los partidos solo pueden usar códigos de equipos del archivo, y un equipo no puede jugar contra sí mismo.
+- `kickoffUtc` va en UTC con formato ISO 8601: sufijo `Z` u offset `+00:00`. Una fecha sin zona horaria o con otro offset se rechaza.
+- `stage` es `Group` o `Knockout`.
+- Si ya existe un equipo con el mismo código (por ejemplo, de otro torneo), se reutiliza y se ignora el nombre del archivo.
+- La importación es todo o nada: si hay algún error, la API responde `400` con los mensajes por campo (ej. `matches[1].awayCode`) y no guarda nada. Un usuario que no es administrador recibe `403`.
 
 ### Ejecutar el frontend
 Pendiente: se completa con el issue del esqueleto de Angular.
