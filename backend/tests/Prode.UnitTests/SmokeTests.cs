@@ -7,6 +7,6 @@ public class SmokeTests
     [Fact]
     public void TestProject_Runs()
     {
-        Assert.True(false); // TEMPORAL: verificar que el CI queda en rojo
+        Assert.True(true);
     }
 }
