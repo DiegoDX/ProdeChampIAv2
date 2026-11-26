@@ -97,6 +97,18 @@ public sealed class TournamentEndpointsTests : IDisposable
         Assert.All(matches, m => Assert.Equal("Scheduled", m.Status));
     }
 
+    // La igualdad de DateTime ignora el Kind, así que se revisa el texto JSON: la fecha leída de la base debe salir con "Z".
+    [Fact]
+    public async Task GetMatches_SerializesKickoffAsUtc()
+    {
+        var imported = await ImportSampleAsAdminAsync();
+
+        var response = await SendAsync(HttpMethod.Get, $"/tournaments/{imported.Id}/matches", await GetUserTokenAsync());
+
+        var json = await response.Content.ReadAsStringAsync();
+        Assert.Contains("\"kickoffUtc\":\"2026-06-15T19:00:00Z\"", json);
+    }
+
     [Fact]
     public async Task Import_AsRegularUser_Returns403AndSavesNothing()
     {

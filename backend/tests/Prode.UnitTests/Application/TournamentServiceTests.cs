@@ -163,6 +163,10 @@ public sealed class TournamentServiceTests
     [InlineData("2026-06-15T19:00:00")]
     [InlineData("2026-06-15T16:00:00-03:00")]
     [InlineData("15/06/2026 19:00")]
+    [InlineData("06/15/2026 19:00:00Z")]
+    [InlineData("2026-06-15 19:00:00Z")]
+    [InlineData("15 Jun 2026 19:00:00 +00:00")]
+    [InlineData("2026-06-15T19:00Z")]
     [InlineData("")]
     [InlineData(null)]
     public async Task Import_KickoffNotInUtc_ReturnsValidationErrorAndSavesNothing(string? kickoff)
@@ -176,6 +180,73 @@ public sealed class TournamentServiceTests
 
         Assert.Equal(TournamentError.Validation, result.Error);
         Assert.Equal([TournamentMessages.KickoffNotUtc], result.ValidationErrors["matches[0].kickoffUtc"]);
+        Assert.Empty(_repository.Tournaments);
+    }
+
+    [Theory]
+    [InlineData("2026-06-15T19:00:00Z")]
+    [InlineData("2026-06-15T19:00:00.000Z")]
+    [InlineData("2026-06-15T19:00:00+00:00")]
+    [InlineData("2026-06-15T19:00:00.0000000+00:00")]
+    public async Task Import_KickoffInIsoUtc_IsAccepted(string kickoff)
+    {
+        var request = ValidRequest() with
+        {
+            Matches = [new ImportMatchRequest("EQA", "EQB", kickoff, "Group")]
+        };
+
+        var result = await _service.ImportAsync(request);
+
+        Assert.True(result.Succeeded);
+        var match = _repository.Tournaments.Single().Matches.Single();
+        Assert.Equal(new DateTime(2026, 6, 15, 19, 0, 0, DateTimeKind.Utc), match.KickoffUtc);
+        Assert.Equal(DateTimeKind.Utc, match.KickoffUtc.Kind);
+    }
+
+    [Fact]
+    public async Task Import_NamesAtMaxLength_AreAccepted()
+    {
+        var request = ValidRequest() with
+        {
+            Name = new string('T', TournamentService.NameMaxLength),
+            Teams = [new ImportTeamRequest(new string('A', TournamentService.NameMaxLength), "EQA"), new ImportTeamRequest("Equipo B", "EQB")],
+            Matches = [new ImportMatchRequest("EQA", "EQB", "2026-06-15T19:00:00Z", "Group")]
+        };
+
+        var result = await _service.ImportAsync(request);
+
+        Assert.True(result.Succeeded);
+    }
+
+    [Fact]
+    public async Task Import_TournamentNameTooLong_ReturnsValidationErrorAndSavesNothing()
+    {
+        var request = ValidRequest() with { Name = new string('T', TournamentService.NameMaxLength + 1) };
+
+        var result = await _service.ImportAsync(request);
+
+        Assert.Equal(TournamentError.Validation, result.Error);
+        Assert.Equal([TournamentMessages.NameTooLong], result.ValidationErrors["name"]);
+        Assert.Empty(_repository.Tournaments);
+    }
+
+    [Fact]
+    public async Task Import_TeamNameTooLong_ReturnsValidationErrorAndSavesNothing()
+    {
+        var request = ValidRequest() with
+        {
+            Teams =
+            [
+                new ImportTeamRequest("Equipo A", "EQA"),
+                new ImportTeamRequest("Equipo B", "EQB"),
+                new ImportTeamRequest(new string('C', TournamentService.NameMaxLength + 1), "EQC")
+            ]
+        };
+
+        var result = await _service.ImportAsync(request);
+
+        Assert.Equal(TournamentError.Validation, result.Error);
+        Assert.Equal([TournamentMessages.TeamNameTooLong], result.ValidationErrors["teams[2].name"]);
         Assert.Empty(_repository.Tournaments);
     }
 
@@ -300,18 +371,20 @@ public sealed class TournamentServiceTests
         public List<Team> StoredTeams { get; } = [];
         public MatchStatus? LastStatusFilter { get; private set; }
 
+        // Contadores del repositorio, igual que una identidad en la base: los ids no se repiten entre torneos.
+        private int _nextTeamId = 1000;
+        private int _nextMatchId = 1;
+
         public Task<IReadOnlyList<Team>> GetTeamsByCodesAsync(IReadOnlyCollection<string> codes, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Team>>(StoredTeams.Where(t => codes.Contains(t.Code)).ToList());
 
         public Task AddAsync(Tournament tournament, CancellationToken cancellationToken)
         {
             tournament.Id = Tournaments.Count + 1;
-            var nextTeamId = 1000;
             foreach (var team in tournament.Teams.Select(tt => tt.Team).Where(t => t.Id == 0))
-                team.Id = nextTeamId++;
-            var nextMatchId = 1;
+                team.Id = _nextTeamId++;
             foreach (var match in tournament.Matches)
-                match.Id = nextMatchId++;
+                match.Id = _nextMatchId++;
             Tournaments.Add(tournament);
             return Task.CompletedTask;
         }

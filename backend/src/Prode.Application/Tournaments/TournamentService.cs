@@ -191,13 +191,20 @@ public sealed partial class TournamentService(ITournamentRepository tournaments)
         return true;
     }
 
+    // Formatos ISO 8601 aceptados: sufijo "Z" u offset explícito (que luego debe ser cero).
+    // Los segundos son obligatorios y las fracciones de segundo, opcionales.
+    private static readonly string[] KickoffFormats =
+    [
+        "yyyy-MM-dd'T'HH:mm:ss.FFFFFFF'Z'",
+        "yyyy-MM-dd'T'HH:mm:ss.FFFFFFFzzz"
+    ];
+
     // Exige una zona horaria explícita y que sea UTC ("Z" u offset cero). Sin zona, la fecha sería ambigua.
     private static bool TryParseUtc(string? value, out DateTime utc)
     {
         utc = default;
-        if (string.IsNullOrWhiteSpace(value) || !UtcDesignatorRegex().IsMatch(value))
-            return false;
-        if (!DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
+        // AssumeUniversal solo aplica al formato con "Z" literal, que no trae offset propio.
+        if (!DateTimeOffset.TryParseExact(value, KickoffFormats, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsed)
             || parsed.Offset != TimeSpan.Zero)
             return false;
 
@@ -240,8 +247,4 @@ public sealed partial class TournamentService(ITournamentRepository tournaments)
 
     [GeneratedRegex("^[A-Z]{3}$")]
     private static partial Regex TeamCodeRegex();
-
-    // Termina en "Z" o en un offset del tipo +00:00.
-    [GeneratedRegex(@"(?:Z|[+-]\d{2}:\d{2})$", RegexOptions.IgnoreCase)]
-    private static partial Regex UtcDesignatorRegex();
 }

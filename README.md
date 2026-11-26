@@ -122,7 +122,7 @@ La respuesta `201` incluye el id del torneo y la cantidad de equipos y partidos 
 Reglas del archivo:
 - El código de equipo tiene exactamente 3 letras y no se repite. Los nombres de equipo tampoco se repiten.
 - Los partidos solo pueden usar códigos de equipos del archivo, y un equipo no puede jugar contra sí mismo.
-- `kickoffUtc` va en UTC con formato ISO 8601: sufijo `Z` u offset `+00:00`. Una fecha sin zona horaria o con otro offset se rechaza.
+- `kickoffUtc` va en UTC con formato ISO 8601 `yyyy-MM-ddTHH:mm:ss` (segundos obligatorios, fracciones opcionales) y sufijo `Z` u offset `+00:00`. Una fecha sin zona horaria, con otro offset o en otro formato se rechaza.
 - `stage` es `Group` o `Knockout`.
 - Si ya existe un equipo con el mismo código (por ejemplo, de otro torneo), se reutiliza y se ignora el nombre del archivo.
 - La importación es todo o nada: si hay algún error, la API responde `400` con los mensajes por campo (ej. `matches[1].awayCode`) y no guarda nada. Un usuario que no es administrador recibe `403`.
